@@ -137,8 +137,8 @@
 
         async function fetchStonkInfo(stonkName){
             try {
-                //let apiURL = "https://stonk-screener.herokuapp.com/stonks/" + stonkName;
-                let apiURL = "http://127.0.0.1:5000/stonks/" + stonkName;
+                let apiURL = "https://stonk-screener.herokuapp.com/stonks/" + stonkName;
+                //let apiURL = "http://127.0.0.1:5000/stonks/" + stonkName;
                 let response = await fetch(apiURL);
                 let data = await response.json()
                 return data;
