@@ -27,7 +27,7 @@
                 </div>
                 <div class="flex-1">
                     <input required class="appearance-none rounded-none relative mx-3 my-3 px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" type="text" name="stonkName" id="stonkName" placeholder="Stonk Name">
-                    <button onclick="getStonkInfo()" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Get Price</button>
+                    <button onclick="getStonkInfo()" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Find Stonk</button>
                 </div>
               <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
@@ -60,12 +60,15 @@
     <script>
         let currentStonks = [];
 
+        // This function will close the error display div and is invoked by clicking on the x icon located within that div
         function closeError(){
             document.getElementById("errorText").innerHTML = "";
             document.getElementById("errorDiv").style.display = "none";
             document.getElementById("stonkName").focus();
         }
 
+        // This function is the main function that fetches and then displays the results for the ticker/symbol, this is invoked by the search button at the top.
+        // This function also handles some edge cases around blank stock symbol, searching for a stock that is on the list again etc.
         function getStonkInfo(){
             let addStonk = true;
             let stonkName = document.getElementById("stonkName");
@@ -130,11 +133,13 @@
             }            
         }
 
+        // This function will remove the stonk from the list and is invoked by the remove button that is located in each row that is showing a stock.
         function removeStonk(elem){
             elem.parentElement.parentElement.remove();
             document.getElementById("stonkName").focus();
         }
 
+        //This function calls the getStonk route exposed by our Flask app and this function is called asynchronously and will return the data returned by our route
         async function fetchStonkInfo(stonkName){
             try {
                 let apiURL = "https://stonk-screener.herokuapp.com/stonks/" + stonkName;
