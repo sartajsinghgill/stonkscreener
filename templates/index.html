@@ -4,33 +4,150 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='build/styles.css') }}">
     <title>Stonk Screener</title>
 </head>
 <body>
-    <div>
-        <label for="stockName">Stock Name</label>
-        <input type="text" name="stockName" id="stockName">
-        <button onclick="getStockInfo()">Get Price</button>
+    <div class="flex flex-col">
+        <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+            <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                <div class="flex-1" id="errorDiv" style="display: none;">
+                    <div class="text-white px-6 py-4 border-0 rounded relative mb-4 bg-red-500">
+                        <span class="text-xl inline-block mr-5 align-middle">
+                          <i class="fas fa-bell" />
+                        </span>
+                        <span class="inline-block align-middle mr-8" id="errorText">
+                          
+                        </span>
+                        <button class="absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-4 mr-6 outline-none focus:outline-none">
+                          <span onclick="closeError()">×</span>
+                        </button>
+                      </div>
+                </div>
+                <div class="flex-1">
+                    <input required class="appearance-none rounded-none relative mx-3 my-3 px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" type="text" name="stonkName" id="stonkName" placeholder="Stonk Name">
+                    <button onclick="getStonkInfo()" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Get Price</button>
+                </div>
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Stonk
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Price
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Previous Close
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Volume
+                    </th>
+                    <th scope="col" class="relative px-6 py-3">
+                      <span class="sr-only">Remove</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200" id="stonkRows">
+                  
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
     </div>
-    <div id="stockInfo" name="stockInfo"></div>
-    <hr />
-    <div id="recentStocks" name="recentStocks"><h4><ul>Recent Stock Searches</ul></h4></div>
     <script>
-        function getStockInfo(){
-            let stockName = document.getElementById("stockName").value;
-            let resultDiv = document.getElementById("stockInfo");
-            let recentDiv = document.getElementById("recentStocks");
-            resultDiv.innerHTML = "<marquee direction='right'>....Loading</marquee>";
-            fetchStockInfo(stockName).then(data => {
-                resultDiv.innerHTML = "$" + JSON.stringify(data.ask);
-                recentDiv.innerHTML += stockName + "<br />";
-            })
+        let currentStonks = [];
+
+        function closeError(){
+            document.getElementById("errorText").innerHTML = "";
+            document.getElementById("errorDiv").style.display = "none";
+            document.getElementById("stonkName").focus();
         }
-        async function fetchStockInfo(stockName){
-            let apiURL = "https://stonk-screener.herokuapp.com/stocks/" + stockName;
-            let response = await fetch(apiURL);
-            let data = await response.json()
-            return data;
+
+        function getStonkInfo(){
+            let addStonk = true;
+            let stonkName = document.getElementById("stonkName");
+            if(stonkName.value === ""){
+                document.getElementById("errorText").innerHTML = "Please enter a stonk symbol/ticker";
+                document.getElementById("errorDiv").style.display = "block";
+                document.getElementById("stonkName").focus();
+                return;
+            }
+            let resultBody = document.getElementById("stonkRows");
+            if(currentStonks.length != 0){
+                currentStonks.forEach(element=>{
+                    if(element === stonkName.value){
+                        addStonk = false;
+                        stonkName.value = "";
+                        document.getElementById("errorText").innerHTML = "Stonk is already in the list";
+                        document.getElementById("errorDiv").style.display = "block";
+                        document.getElementById("stonkName").focus();
+                        return;
+                    }
+                });
+                currentStonks.push(stonkName.value);
+            }
+            else {
+                currentStonks.push(stonkName.value);
+            }
+            if(addStonk){
+                fetchStonkInfo(stonkName.value).then(data => {
+                resultBody.innerHTML += `<tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="flex items-center">
+                        <div class="flex-shrink-0 h-10 w-10">
+                          <img class="h-10 w-10 rounded-full" src="` + data.logo_url + `" alt="">
+                        </div>
+                        <div class="ml-4">
+                          <div class="text-sm font-medium text-gray-900">
+                            ` + data.shortName + `
+                          </div>
+                          <div class="text-sm text-gray-500">
+                            ` + data.industry + `
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm text-gray-900">$` + data.bid + `</div>
+                      <!--<div class="text-sm text-gray-500">Optimization</div>-->
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">$` + data.previousClose + `</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ` + data.volume + `
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button onclick="removeStonk(this)" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Remove</button>
+                    </td>
+                  </tr>`;
+                  stonkName.value = "";
+                });
+                document.getElementById("stonkName").focus();
+            }            
+        }
+
+        function removeStonk(elem){
+            elem.parentElement.parentElement.remove();
+            document.getElementById("stonkName").focus();
+        }
+
+        async function fetchStonkInfo(stonkName){
+            try {
+                //let apiURL = "https://stonk-screener.herokuapp.com/stonks/" + stonkName;
+                let apiURL = "http://127.0.0.1:5000/stonks/" + stonkName;
+                let response = await fetch(apiURL);
+                let data = await response.json()
+                return data;
+            } catch (error) {
+                document.getElementById("errorText").innerHTML = "Either the stonk symbol/ticker was incorrect or there was an error, please check and try again";
+                document.getElementById("errorDiv").style.display = "block";
+                document.getElementById("stonkName").value = "";
+                document.getElementById("stonkName").focus();
+            }
         }
     </script>
 </body>

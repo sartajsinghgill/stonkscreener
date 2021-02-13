@@ -7,7 +7,7 @@ app = Flask(__name__)
 def index():
     return render_template("index.html")
 
-@app.route('/stocks/<symbol>')
-def getStock(symbol):
-    stockName = yf.Ticker(symbol)
-    return(stockName.info)
+@app.route('/stonks/<symbol>')
+def getStonk(symbol):
+    stonkName = yf.Ticker(symbol)
+    return(stonkName.info)
