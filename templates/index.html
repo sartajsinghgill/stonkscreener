@@ -27,7 +27,7 @@
             })
         }
         async function fetchStockInfo(stockName){
-            let apiURL = "http://127.0.0.1:5000/stocks/" + stockName;
+            let apiURL = "https://stonk-screener.herokuapp.com/stocks/" + stockName;
             let response = await fetch(apiURL);
             let data = await response.json()
             return data;
