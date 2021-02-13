@@ -13,17 +13,21 @@
         <button onclick="getStockInfo()">Get Price</button>
     </div>
     <div id="stockInfo" name="stockInfo"></div>
+    <hr />
+    <div id="recentStocks" name="recentStocks"><h4><ul>Recent Stock Searches</ul></h4></div>
     <script>
         function getStockInfo(){
             let stockName = document.getElementById("stockName").value;
             let resultDiv = document.getElementById("stockInfo");
-            resultDiv.innerHTML = "<marquee direction='right'>....Loading</marquee>"
+            let recentDiv = document.getElementById("recentStocks");
+            resultDiv.innerHTML = "<marquee direction='right'>....Loading</marquee>";
             fetchStockInfo(stockName).then(data => {
-                resultDiv.innerHTML = "$" + JSON.stringify(data.ask)
+                resultDiv.innerHTML = "$" + JSON.stringify(data.ask);
+                recentDiv.innerHTML += stockName + "<br />";
             })
         }
         async function fetchStockInfo(stockName){
-            let apiURL = "https://stonk-screener.herokuapp.com/stocks/" + stockName;
+            let apiURL = "http://127.0.0.1:5000/stocks/" + stockName;
             let response = await fetch(apiURL);
             let data = await response.json()
             return data;
