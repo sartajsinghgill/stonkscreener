@@ -13,14 +13,14 @@
     <!-- Header -->
     <div class="md:p-8 bg-green-700 flex items-start shadow">
         <div class="fad fa-rocket-launch fill-current text-green-500 text-4xl md:text-8xl bg-white p-4 md:p-7 my-4 mx-2 rounded-full"></div>
-        <div class="text-green-200 text-4xl md:text-7xl rounded mx-8 my-8 md:my-12">Stonks ( To the <i class="far fa-moon-stars"></i>)</div>
+        <div class="text-green-200 text-4xl md:text-7xl rounded mx-8 my-8 md:my-12">Stonks ( To the <i class="far fa-moon-stars"></i> )</div>
     </div>
 
     <!-- Search Stock -->
     <div class="flex flex-col md:flex-row max-h-16 my-2">
       <input type="text" name="stonkName" id="stonkName" class="shadow m-2 p-2 text-2xl rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600 text-green-700" placeholder="Ticker/Symbol">
       <button onclick="getStonkInfo()" class="bg-indigo-600 rounded-xl p-2 text-xl max-h-12 my-2 text-indigo-200 focus:outline-none hover:text-indigo-600 hover:bg-indigo-200 transition duration-200 ease-in-out">Find Stonk</button>
-      <span id="errorDiv" class="my-2 py-2 max-h-12 max-w-max text-xl bg-red-200 text-red-600 rounded-xl" style="display: block;"></span>
+      <span id="errorDiv" class="my-2 py-2 mx-2 max-h-12 max-w-max text-xl bg-red-200 text-red-600 rounded-xl" style="display: block;"></span>
     </div>
     
     <!-- Stonks List -->
@@ -30,12 +30,6 @@
     <script>
         let currentStonks = [];
         let resultBody = document.getElementById("resultBody");
-        // This function will close the error display div and is invoked by clicking on the x icon located within that div
-        function closeError(){
-            document.getElementById("errorDiv").innerHTML = "";
-            document.getElementById("errorDiv").style.display = "none";
-            document.getElementById("stonkName").focus();
-        }
 
         // This function is the main function that fetches and then displays the results for the ticker/symbol, this is invoked by the search button at the top.
         // This function also handles some edge cases around blank stock symbol, searching for a stock that is on the list again etc.
@@ -43,9 +37,7 @@
             let addStonk = true;
 
             if(stonkName.value === ""){
-                document.getElementById("errorDiv").innerHTML = "<span class=\"px-2\">Please enter a stonk symbol/ticker<i class=\"fas fa-times align-top hover:text-red-200 hover:bg-red-600 hover:p-4 rounded ml-4 mb-6\" onclick=\"closeError()\"></i></span>";
-                document.getElementById("errorDiv").style.display = "block";
-                document.getElementById("stonkName").focus();
+                showError("Please enter a stonk symbol/ticker",true);
                 return;
             }
             if(currentStonks.length != 0){
@@ -53,9 +45,7 @@
                     if(element === stonkName.value){
                         addStonk = false;
                         stonkName.value = "";
-                        document.getElementById("errorDiv").innerHTML = "<span class=\"px-2\">Stonk is already in the list<i class=\"fas fa-times align-top hover:text-red-200 hover:bg-red-600 hover:p-4 rounded ml-4 mb-6\" onclick=\"closeError()\"></i></span>";
-                        document.getElementById("errorDiv").style.display = "block";
-                        document.getElementById("stonkName").focus();
+                        showError("Stonk is already in the list",true);
                         return;
                     }
                 });
@@ -96,11 +86,20 @@
                 let data = await response.json()
                 return data;
             } catch (error) {
-                document.getElementById("errorDiv").innerHTML = "<span class=\"px-2\">Either the stonk symbol/ticker was incorrect or there was an error, please check and try again<i class=\"fas fa-times align-top hover:text-red-200 hover:bg-red-600 hover:p-4 rounded ml-4 mb-6\" onclick=\"closeError()\"></i></span>";
+                showError("Either the stonk symbol/ticker was incorrect or there was an error, please check and try again",true);
+            }
+        }
+
+        function showError(text,flag){
+            document.getElementById("errorDiv").innerHTML = "<span class=\"px-2\">"+text+"<i class=\"fas fa-times align-top hover:text-red-200 hover:bg-red-600 hover:p-4 rounded ml-4 mb-6\" onclick=\"showError('',false)\"></i></span>";
+            if(flag){
                 document.getElementById("errorDiv").style.display = "block";
                 document.getElementById("stonkName").value = "";
-                document.getElementById("stonkName").focus();
             }
+            else{
+                document.getElementById("errorDiv").style.display = "none";
+            }
+            document.getElementById("stonkName").focus();
         }
     </script>
 </body>
