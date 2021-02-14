@@ -22,8 +22,8 @@
     </div>
     
     <!-- Stonks List -->
-    <div id="resultBody" class="flex flex-row">
-        
+    <div id="resultBody" class="flex flex-row flex-wrap mt-36 md:mt-1">
+                
     </div>
     <script>
         let currentStonks = [];
@@ -54,7 +54,7 @@
             }
             if(addStonk){
                 fetchStonkInfo(stonkName.value).then(data => {
-                  resultBody.innerHTML += `<div class="shadow m-4 rounded-xl">
+                  resultBody.innerHTML += `<div class="shadow ml-2 mt-2 w-48 rounded-xl">
                     <button onclick="removeStonk(this)" class="w-full border-red-400 border-2 rounded-t-xl text-red-400 px-2">Remove <i class="fas fa-times-circle"></i></button>
                     <img src="`+data.logo_url+`" alt="Stonk Logo" class="rounded-b-xl w-full h-40">
                     <span class="m-2 text-2xl text-green-700">`+data.shortName+`</span><br />
