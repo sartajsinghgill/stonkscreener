@@ -86,8 +86,8 @@
         //This function calls the getStonk route exposed by our Flask app and this function is called asynchronously and will return the data returned by our route
         async function fetchStonkInfo(stonkName){
             try {
-                //let apiURL = "https://stonk-screener.herokuapp.com/stonks/" + stonkName;
-                let apiURL = "http://127.0.0.1:5000/stonks/" + stonkName;
+                let apiURL = "https://stonk-screener.herokuapp.com/stonks/" + stonkName;
+                //let apiURL = "http://127.0.0.1:5000/stonks/" + stonkName;
                 let response = await fetch(apiURL);
                 let data = await response.json();
                 standardBtn.style.display = "block";
