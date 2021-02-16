@@ -28,6 +28,11 @@
     <!-- Stonks List -->
     <div id="resultBody" class="flex flex-row flex-wrap mt-36 md:mt-1">
     </div>
+
+    <div class="flex flex-row">
+        <canvas id="myChart" width="100" height="100"></canvas>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
     <script>
         let currentStonks = [];
         let resultBody = document.getElementById("resultBody");
@@ -58,6 +63,7 @@
                 currentStonks.push(stonkName.value);
             }
             if(addStonk){
+                showStonkHistory();
                 standardBtn.style.display = "none";
                 loadingBtn.style.display = "block";
                 fetchStonkInfo(stonkName.value).then(data => {
@@ -71,11 +77,47 @@
                     <span class="m-2 text-green-700">Volume: <span id="volume" class="text-xl">`+data.volume+`</span></span>
                     </div>`
                   stonkName.value = "";
-                  //
                   
                 });
                 document.getElementById("stonkName").focus();
             }            
+        }
+
+        function showStonkHistory(){
+            var ctx = document.getElementById('myChart').getContext('2d');
+
+            let addStonk = true;
+
+
+            if(addStonk){
+                var data = fetchStonkHistory(stonkName.value)
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['1st'],
+                        datasets: [{
+                            label: 'Open Price for stock',
+                            data: [data["Open"]],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            }
         }
 
         // This function will remove the stonk from the list and is invoked by the remove button that is located in each row that is showing a stock.
@@ -87,14 +129,30 @@
         //This function calls the getStonk route exposed by our Flask app and this function is called asynchronously and will return the data returned by our route
         async function fetchStonkInfo(stonkName){
             try {
-                let apiURL = "https://stonk-screener.herokuapp.com/stonks/" + stonkName;
-                //let apiURL = "http://127.0.0.1:5000/stonks/" + stonkName;
+                //let apiURL = "https://stonk-screener.herokuapp.com/stonks/" + stonkName;
+                let apiURL = "http://127.0.0.1:5000/stonks/" + stonkName;
                 let response = await fetch(apiURL);
                 let data = await response.json();
                 standardBtn.style.display = "block";
                 loadingBtn.style.display = "none";
                 return data;
             } catch (error) {
+                showError("Either the stonk symbol/ticker was incorrect or there was an error, please check and try again",true);
+                standardBtn.style.display = "block";
+                loadingBtn.style.display = "none";
+            }
+        }
+
+        async function fetchStonkHistory(stonkName){
+            try{
+                //let apiURL = "https://stonk-screener.herokuapp.com/stonks/" + stonkName + "/history";
+                let apiURL = "http://127.0.0.1:5000/stonks/" + stonkName + "/history";
+                let response = await fetch(apiURL);
+                let data = await response.json();
+                standardBtn.style.display = "block";
+                loadingBtn.style.display = "none";
+                return data;
+            } catch(error){
                 showError("Either the stonk symbol/ticker was incorrect or there was an error, please check and try again",true);
                 standardBtn.style.display = "block";
                 loadingBtn.style.display = "none";
