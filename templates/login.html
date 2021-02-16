@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='build/styles.css') }}">-->
+    <!--<link rel="stylesheet" href="{{ url_for('static',filename='build/all.min.css') }}">-->
+    <link rel="stylesheet" href="/stonkscreener/static/build/all.min.css">
+    <link rel="stylesheet" href="/stonkscreener/static/build/styles.css">
+    <link rel="icon" type="image/png" href="/favicon.png"/>
+    <!--<link rel="icon" type="image/svg+xml" href="{{ url_for('static',filename='dollar-sign.svg') }}">-->
+    <link rel="icon" type="image/svg+xml" href="/stonkscreener/static/dollar-sign.svg">
+    <title>Stonks Login Page</title>
+</head>
+<body>
+    <div class="grid grid-cols-1 bg-red-200">
+        <div>
+            <h3>Instagram</h3>
+            <input type="text" name="username" id="username" placeholder="Phone number, username, or email" class="rounded">
+            <input type="password" name="password" id="password" class="rounded">
+        </div>
+        <div>
+            <button>Log In</button>
+        </div>
+        <div>
+            <span>---------- OR ------------</span>
+            <a href="#">Forgot password?</a>
+        </div>
+        <div>
+            Don't have an account? <a href="#">Sign up</a>
+        </div>
+    </div>
+</body>
+</html>
