@@ -63,7 +63,6 @@
                 currentStonks.push(stonkName.value);
             }
             if(addStonk){
-                showStonkHistory();
                 standardBtn.style.display = "none";
                 loadingBtn.style.display = "block";
                 fetchStonkInfo(stonkName.value).then(data => {
